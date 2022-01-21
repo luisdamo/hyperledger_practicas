@@ -93,7 +93,7 @@ async function sendSchema(poolHandle, walletHandle, Did, schema) {
 
 async function sendCredDef(poolHandle, walletHandle, did, credDef) {
     let credDefRequest = await indy.buildCredDefRequest(did, credDef);
-    await indy.signAndSubmitRequest(poolHandle, walletHandle, did, credDefRequest);
+    return await indy.signAndSubmitRequest(poolHandle, walletHandle, did, credDefRequest);
 }
 
 async function getSchema(poolHandle, did, schemaId) {
@@ -127,10 +127,18 @@ async function main() {
     //Registrar el esquema
     const response = await sendSchema(poolHandler, walletHandler, did, schema)
     console.log("register schema response:" + JSON.stringify(response))
+    //Obtener el schema
+    let [,readedSchema] = await getSchema(poolHandler, did, id)
+    console.log("get schema response:" + JSON.stringify(readedSchema))
+    schema = readedSchema;
     //Definir credenciales
     let  [credDefId, credDef] = await indy.issuerCreateAndStoreCredentialDef(walletHandler,did,schema,"TAG",'CL','{"support_revocation":false}');
     console.log("Definición de credenciales credDefId:" + credDefId)
     console.log("Definición de credenciales credDef:" + JSON.stringify(credDef))
+    //Registrar en la red
+    const credRegistrationResp = await sendCredDef(poolHandler,walletHandler,did, credDef)
+    console.log("send registration response:" + JSON.stringify(credRegistrationResp))
+    
     await indy.closePoolLedger(poolHandler)
     } catch (err) {
         console.error("Error en main" + err)
