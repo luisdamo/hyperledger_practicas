@@ -1,5 +1,6 @@
 var indy = require('indy-sdk')
 const util = require('./util.js');
+const encoder = require('./encoder.js')
 async function connect() {
     try {
         let poolName = 'pool1';
@@ -150,8 +151,21 @@ async function main() {
             console.error("Error creando master secret" + err)
             throw err
         }
+        let [credReq, credReqMetadata] = await indy.proverCreateCredentialReq(walletHandler,did,credOffer,credDef,masterSecretId)
+        console.log("create credential req:" + credReq)
+        console.log("create credential request metadata:" + JSON.stringify(credReqMetadata))
+        //issuerCreateCredential
+        let values = {
+            "name": {"raw": "jose luis", "encoded": encoder.encodeCredValue('value1_as_int')},
+            "age": {"raw": "52", "encoded": "52"}
+        }
+        console.log("Datos de credencial" + JSON.stringify(values))
+        let [cred, credRevocId, revocReqDelta] = await indy.issuerCreateCredential(walletHandler, credOffer,credReq,values,null, -1 )                
+        console.log("IssuerCreateCredential cred " + JSON.stringify(cred))
+        console.log("IssuerCreateCredential credRevocId" + credRevocId)
+        console.log("IssuerCreateCredential revocReqDelta" + revocReqDelta)
 
-        //proverCreateCredentialReq ( wh, proverDid, credOffer, credDef, masterSecretId )
+        //proverCreateCredential( wh, proverDid, credOffer, credDef, masterSecretId )
         //Cerrar pool
         await indy.closePoolLedger(poolHandler)
     } catch (err) {
