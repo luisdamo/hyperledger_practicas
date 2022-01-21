@@ -141,7 +141,17 @@ async function main() {
     //Crear la oferta
     let credOffer = await indy.issuerCreateCredentialOffer(walletHandler, credDefId)
     console.log("send credential offer:" + JSON.stringify(credOffer))
+    //Crear Master Secret
+    let masterSecretId = "";
+    try {
+        masterSecretId = await indy.proverCreateMasterSecret ( walletHandler, null)
+        console.log("create master master secret:" + masterSecretId)
+    } catch (err) {
+        console.error("Error creando master secret" + err)
+        throw err
+    }
     
+    //proverCreateCredentialReq ( wh, proverDid, credOffer, credDef, masterSecretId )
     //Cerrar pool
     await indy.closePoolLedger(poolHandler)
     } catch (err) {
