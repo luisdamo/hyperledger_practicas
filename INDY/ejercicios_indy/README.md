@@ -47,7 +47,13 @@ Es necesario actualizar cada vez la versión del schema
 ### Registrar credential definition
 const [credDefId, credDef] = await indy.issuerCreateAndStoreCredentialDef(walletHandler,did,schema,"TAG",'CL')
 ### Credential offer (issuer)
+### Create master secret
+proverCreateMasterSecret ( wh, masterSecretId ) -> outMasterSecretId
 
+Creates a master secret with a given id and stores it in the wallet. The id must be unique.
+### Credential request(holder)
+proverCreateCredentialReq ( wh, proverDid, credOffer, credDef, masterSecretId ) -> [ credReq, credReqMetadata ]
+Creates a credential request for the given credential offer.
 ### Credential response (holder)
 ### Credential issuance(issuer)
 ### Save credential (holder)
