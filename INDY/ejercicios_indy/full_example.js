@@ -136,9 +136,13 @@ async function main() {
     console.log("Definición de credenciales credDefId:" + credDefId)
     console.log("Definición de credenciales credDef:" + JSON.stringify(credDef))
     //Registrar en la red
-    const credRegistrationResp = await sendCredDef(poolHandler,walletHandler,did, credDef)
+    let credRegistrationResp = await sendCredDef(poolHandler,walletHandler,did, credDef)
     console.log("send registration response:" + JSON.stringify(credRegistrationResp))
+    //Crear la oferta
+    let credOffer = await indy.issuerCreateCredentialOffer(walletHandler, credDefId)
+    console.log("send credential offer:" + JSON.stringify(credOffer))
     
+    //Cerrar pool
     await indy.closePoolLedger(poolHandler)
     } catch (err) {
         console.error("Error en main" + err)
